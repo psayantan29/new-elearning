@@ -8,6 +8,7 @@ from django.urls import reverse
 from django.db.models.signals import pre_save
 from django.utils.text import slugify
 from django.dispatch import receiver
+from users.models import UserProfile as User
 
 # Create your models here.
 class Webinar(models.Model):
@@ -97,3 +98,15 @@ def auto_delete_file_on_delete(sender, instance, **kwargs):
     if instance.file:
         if os.path.isfile(instance.file.path):
             os.remove(instance.file.path)
+
+
+class Comment(models.Model):
+    post = models.ForeignKey(Session, on_delete = models.CASCADE)
+    user = models.ForeignKey(User, on_delete = models.CASCADE)
+    reply = models.ForeignKey('Comment', null=True, related_name="replies",on_delete = models.CASCADE)
+    content = models.TextField(max_length=160)
+    timestamp = models.DateTimeField(auto_now_add=True)
+
+
+    def __str__(self):
+        return '{}-{}'.format(self.post.session_name, str(self.user.username))

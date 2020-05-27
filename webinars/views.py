@@ -3,7 +3,7 @@ from django.http import HttpResponseRedirect
 from django.contrib.auth.decorators import user_passes_test, login_required
 from .forms import *
 from pinax.referrals.models import Referral
-
+from .models import Comment
 
 @login_required
 def webinars(request):
@@ -100,12 +100,28 @@ def session(request, webinar_name=None, slug=None):
     add_gdlink_form=AddGDLinkForm(request.POST or None)
     file_upload_form = FileUploadForm(request.POST or None, request.FILES or None)
 
+    comments = Comment.objects.filter(post=place, reply=None).order_by('-id')
     queryset_txt_block = TextBlockW.objects.filter(text_block_fk__id=place.id)
     queryset_yt_link = YTLinkW.objects.filter(yt_link_fk__id=place.id)
     queryset_files = FileUploadW.objects.filter(file_fk__id=place.id)
     queryset_gdlink = gdlinkW.objects.filter(gd_link_fk__id=place.id)
 
-    
+    if request.method == 'POST':
+        comment_form = CommentForm(request.POST or None)
+        if comment_form.is_valid():
+            content = request.POST.get('content')
+            reply_id = request.POST.get('comment_id')
+            comment_qs = None
+            if reply_id:
+                comment_qs = Comment.objects.get(id=reply_id)
+            comment = Comment.objects.create(post=place, user=request.user, content=content, reply=comment_qs)
+            comment.save()
+            # comment_form.clean()
+            return HttpResponseRedirect(place.get_absolute_url())
+    else:
+        comment_form= CommentForm()
+
+
     context = {
         "title": place.session_name,
         "webinar_name": webinar_name,
@@ -120,6 +136,8 @@ def session(request, webinar_name=None, slug=None):
         "path": "Profile",
         "redirect_path": "profile",
         "file_upload_form": file_upload_form,
+        'comments': comments,
+        'comment_form': comment_form,
     }
 
     if add_link_form.is_valid() and 'add_link' in request.POST:

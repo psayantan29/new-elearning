@@ -17,7 +17,13 @@
   {% endblock %}
 
 </div>
-
+<script type="text/javascript">
+  $(document).ready(function(event){
+    $('.reply-btn').click(function() {
+      $(this).parent().parent().next('.replied-comments').fadeToggle()
+    });
+  });
+</script>
 <footer class="footer">
   <div class="footer-grid">
     <nav class="footer-nav">
