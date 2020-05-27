@@ -12,8 +12,9 @@ from django.conf import settings
 from django.contrib import messages
 from django.shortcuts import render, redirect
 from itertools import chain
-from django.http import Http404 , HttpResponseRedirect
+from django.http import Http404 , JsonResponse, HttpResponseRedirect
 from .models import UserProfile
+from django.template.loader import render_to_string
 import razorpay
 import json
 
@@ -410,7 +411,7 @@ def student_webinar(request, webinar_name, slug=None):
                 comment = Comment.objects.create(post=session, user=request.user, content=content, reply=comment_qs)
                 comment.save()
                 
-                return HttpResponseRedirect(session.get_absolute_url())
+                # return HttpResponseRedirect(session.get_absolute_url())
         else:
             comment_form= CommentForm() 
 
@@ -425,6 +426,11 @@ def student_webinar(request, webinar_name, slug=None):
             'comment_form': comment_form,
         }
         # print(result_list)
+
+        if request.is_ajax():
+            html = render_to_string('comment.html', context, request=request)
+            return JsonResponse({'form': html})
+
         return render(request, "users/student_webinars.html", context)
 
     else:

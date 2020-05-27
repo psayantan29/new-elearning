@@ -1,9 +1,10 @@
 from django.shortcuts import render, redirect
-from django.http import HttpResponseRedirect
+from django.http import JsonResponse, HttpResponseRedirect
 from django.contrib.auth.decorators import user_passes_test, login_required
 from .forms import *
 from pinax.referrals.models import Referral
 from .models import Comment
+from django.template.loader import render_to_string
 
 @login_required
 def webinars(request):
@@ -117,7 +118,7 @@ def session(request, webinar_name=None, slug=None):
             comment = Comment.objects.create(post=place, user=request.user, content=content, reply=comment_qs)
             comment.save()
             # comment_form.clean()
-            return HttpResponseRedirect(place.get_absolute_url())
+            # return HttpResponseRedirect(place.get_absolute_url())
     else:
         comment_form= CommentForm()
 
@@ -139,6 +140,10 @@ def session(request, webinar_name=None, slug=None):
         'comments': comments,
         'comment_form': comment_form,
     }
+
+    if request.is_ajax():
+        html = render_to_string('comment.html', context, request=request)
+        return JsonResponse({'form': html})
 
     if add_link_form.is_valid() and 'add_link' in request.POST:
         instance = add_link_form.save(commit=False)
