@@ -151,40 +151,35 @@ body {
   # Navigation Menu
   --------------------------------------------------------------*/
   /* Desktop Navigation */
-  .container{
-    align-items:center;
-    color: black;
-    z-index:200;
-    top:1.85rem;
-    width:100%;    
-    
-    transition: all .2s;}
+  
   .nav-menu{
 
-    
+    width:100%; 
     padding: 3rem , 4rem , 2rem ;
     align-items:center;
     
-    
+    z-index:100;
     transition: all .2s;
-    
+    white-space:nowrap; 
+    overflow-x:hidden;
 
 
   }
   .nav-scrolled{
     padding:0.6rem;
     background:#111938;
-    opacity:1;
+    opacity:0.8;
     
     }
 
   .nav-menu ul {
-    margin: 0;
-    padding: 0;
-    list-style: none;
-  }
+    display: inline-block;
+    vertical-align: middle;
+
+   }
   
   .nav-menu > ul {
+      
     display: flex;
   }
   
@@ -273,6 +268,26 @@ body {
     position: absolute;
     right: 15px;
   }
+  .nav-menu .logo {
+    font-size: 32px;
+    margin: 0;
+    padding: 0;
+    line-height: 1;
+    font-weight: 600;
+    letter-spacing: 1px;
+    text-transform: uppercase;
+    font-family: "Poppins", sans-serif;
+  }
+  
+  .nav-menu .logo a {
+    color: #5fcf80;
+  }
+  
+  .nav-menu .logo img {
+    max-height: 40px;
+  }
+  
+  
   
   @media (max-width: 1366px) {
     .nav-menu .drop-down .drop-down ul {
@@ -284,6 +299,9 @@ body {
     .nav-menu .drop-down .drop-down > a:after {
       content: "\ea9d";
     }
+    .nav-menu .logo {
+        font-size: 28px;
+      }
   }
   
   /* Get Startet Button */

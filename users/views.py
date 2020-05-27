@@ -1,5 +1,5 @@
 from courses.forms import AddCourseForm
-from webinars.forms import AddWebinarForm
+from webinars.forms import AddWebinarForm,CommentForm
 from webinars.models import *
 from courses.models import *
 from .forms import *
@@ -12,7 +12,8 @@ from django.conf import settings
 from django.contrib import messages
 from django.shortcuts import render, redirect
 from itertools import chain
-from django.http import Http404
+from django.http import Http404,JsonResponse, HttpResponseRedirect
+from django.template.loader import render_to_string
 from .models import UserProfile
 import razorpay
 import json
@@ -389,11 +390,29 @@ def student_webinar(request, webinar_name, slug=None):
     files = FileUploadW.objects.filter(file_fk=session)
     gdlinks = gdlinkW.objects.filter(gd_link_fk=session)
     user = request.user
+
+    comments = Comment.objects.filter(post=session, reply=None).order_by('-id')
     
     if user in webinar.students.all() or user.is_professor or user.is_site_admin or webinar.for_everybody:
         result_list = sorted(
             chain(text, videos, files, gdlinks),
             key=lambda instance: instance.date_created)
+        
+        if request.method == 'POST':
+            comment_form = CommentForm(request.POST or None)
+            if comment_form.is_valid():
+                content = request.POST.get('content')
+                reply_id = request.POST.get('comment_id')
+                comment_qs = None
+                if reply_id:
+                    comment_qs = Comment.objects.get(id=reply_id)
+                comment = Comment.objects.create(post=session, user=request.user, content=content, reply=comment_qs)
+                comment.save()
+
+                # return HttpResponseRedirect(session.get_absolute_url())
+        else:
+            comment_form= CommentForm()    
+
 
         context = {
             "webinar_name": webinar_name,
@@ -402,8 +421,14 @@ def student_webinar(request, webinar_name, slug=None):
             "slug": session.slug,
             "result_list": result_list,
             "title": webinar_name + ' : ' + session.session_name,
+            'comments': comments,
+            'comment_form': comment_form,
         }
-        # print(result_list)
+
+        if request.is_ajax():
+            html = render_to_string('comment.html', context, request=request)
+            return JsonResponse({'form': html})
+
         return render(request, "users/student_webinars.html", context)
 
     else:

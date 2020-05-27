@@ -1,6 +1,6 @@
 from __future__ import unicode_literals
 import os
-from users.models import UserProfile
+from users.models import UserProfile 
 
 from django.db import models
 from users.models import UserProfile
@@ -90,6 +90,17 @@ class FileUploadW(models.Model):
     file = models.FileField(null=False, blank=False, default='')
     date_created = models.DateTimeField(auto_now_add=True)
     file_fk = models.ForeignKey(Session,  on_delete=models.CASCADE)
+
+class Comment(models.Model):
+    post = models.ForeignKey(Session, on_delete = models.CASCADE)
+    user = models.ForeignKey(UserProfile, on_delete = models.CASCADE)
+    reply = models.ForeignKey('Comment', null=True, related_name="replies",on_delete = models.CASCADE)
+    content = models.TextField(max_length=160)
+    timestamp = models.DateTimeField(auto_now_add=True)
+
+
+    def __str__(self):
+        return '{}-{}'.format(self.post.session_name, str(self.user.username))
 
 
 @receiver(models.signals.post_delete, sender=FileUploadW)
