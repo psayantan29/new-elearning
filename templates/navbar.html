@@ -1,4 +1,4 @@
-{%load static%}
+{% comment %} {%load static%}
 
 <!-- Navigation bar -->
 <link href="{% static "css/navbar.css" %}" rel="stylesheet"/>
@@ -42,15 +42,119 @@
           <li><a href="{% url 'profile' %}"><span class="glyphicon glyphicon-user"></span> {{ user.get_username }}</a>
           </li>
           <li><a href="/accounts/logout"><span class="glyphicon glyphicon-log-out"></span> Logout</a></li>
+          
         {% else %}
           <li><a href="/accounts/register"><span class="glyphicon glyphicon-plus"></span> Sign Up</a></li>
           <li><a href="/accounts/login"><span class="glyphicon glyphicon-user"></span> Log In</a></li>
         {% endif %}
+        <li><a href="/faq" class="get-started-btn">READ FAQ</a></li>
       </ul>
     </div>
   </div>
 </nav>
 </header>
+
+<script>
+// When the user scrolls down 20px from the top of the document, slide down the navbar
+window.onscroll = function() {
+  scrollFunction();
+
+  };
+
+
+
+function scrollFunction() {
+ 
+  if (document.body.scrollTop  || document.documentElement.scrollTop) {
+    //list = document.getElementsByClassName("nav");
+    //for (index = 0; index < list.length; ++index) {
+    //    list[index].setAttribute('style', 'background-color: #111938;top=0;');
+        
+    //}
+      document.getElementById("nav").classList.add("nav-scrolled");
+      console.log(document.getElementById("nav").classList)
+    
+  } else {
+    
+    //list = document.getElementsByClassName("nav");
+    //for (index = 0; index < list.length; ++index) {
+    //    list[index].setAttribute('style', 'background-color: #333;top=-50px;');
+        
+    //}
+    
+    document.getElementById("nav").classList.remove("nav-scrolled");
+    console.log(document.getElementById("nav").classList)
+
+    
+    
+    
+  }
+}
+</script> {% endcomment %}
+
+
+
+{%load static%}
+
+
+
+  <!-- ======= Header ======= -->
+
+    <div id="nav" class="container affix align-items-center">
+    
+      <h1 class="logo mr-auto"><a href="/">GET SKILLS</a></h1>
+      <!-- Uncomment below if you prefer to use an image logo -->
+      <!-- <a href="index.html" class="logo mr-auto"><img src="assets/img/logo.png" alt="" class="img-fluid"></a>-->
+
+      <nav class="nav-menu d-none d-lg-block">
+        <ul>
+      <li class="active"><a href="/"> Home</a></li>
+      {% if request.user.is_authenticated %}
+        <li><a href="{% url 'courses' %}"> Courses</a></li>
+      {% else %}
+        <li><a href="/">Courses</a></li>
+      {% endif %}
+      {% if request.user.is_authenticated %}
+        <li><a href="{% url 'webinars' %}"> Webinars</a></li>
+      {% else %}
+        <li><a href="/">Webinars</a></li>
+      {% endif %}
+      {% if request.user.is_authenticated %}
+        <li><a href="{% url 'affiliate' %}"> Affiliate</a></li>
+      {% else %}
+        <li><a href="/">Affiliate</a></li>
+      {% endif %}
+      <li><a href="{% url 'about' %}"> About</a></li>
+      <li><a href="{% url 'contact' %}"> Contact</a></li>
+      {% if request.user.is_authenticated %}
+      <li class="drop-down"><a href="">Profile</a>
+    
+           
+                <ul>
+                  
+    <li><a href="{% url 'profile' %}"><span class="glyphicon glyphicon-user"></span> {{ user.get_username }}</a>
+    </li>
+    <li><a href="/accounts/logout"><span class="glyphicon glyphicon-log-out"></span> Logout</a></li>
+  
+  
+                </ul>
+                {% endif %}
+           
+
+
+        </ul>
+      </nav><!-- .nav-menu -->
+      {% if request.user.is_authenticated %}
+      <a href="/accounts/logout" class="get-started-btn">Logout</a>
+      <a href="/faq" class="get-started-btn">READ FAQ</a>
+      {% else %}
+      <a href="/accounts/register" class="get-started-btn">Get Started</a> <a><h1></h1></a>
+      <a href="/accounts/login" class="get-started-btn">Login</a>
+      {% endif %}
+    </div>
+    
+ 
+
 
 <script>
 // When the user scrolls down 20px from the top of the document, slide down the navbar
